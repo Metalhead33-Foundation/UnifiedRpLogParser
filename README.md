@@ -1,6 +1,17 @@
 # UnifiedRpLogParser
 The successor to [FListNoteArchiveConverter](https://github.com/Metalhead33-Foundation/FListNoteArchiveConverter), [pidgin-log-parser](https://github.com/Metalhead33-Foundation/pidgin-log-parser) and [phpbb-forum-parser](https://github.com/Metalhead33-Foundation/phpbb-forum-parser), and possibly others.
 
+It takes RPG logs from various sources, and outputs them in a format intended for [my wiki](https://waysofdarkness.miraheze.org/wiki/Main_Page).
+
+```
+{{RPG Post/<poster's character name>
+|date=<post date>
+|post=<post content>
+}}
+```
+
+JSON support intended to be added in the future.
+
 You are intended to build it this way on Linux:
 
 ```

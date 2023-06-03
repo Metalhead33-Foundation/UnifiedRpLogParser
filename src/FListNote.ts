@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import cheerio from 'cheerio';
 import * as UnifiedRpApi from './UnifiedRpApi';
-import {Distance, decrementDate, formatDate} from './RelativeDate';
+import {Distance, decrementDate} from './RelativeDate';
 import {bbcodeToHtml} from './BBCode';
 
 export interface FListNote {
@@ -102,7 +102,7 @@ export function StandardizePostLogs(input: FListNoteArchive): UnifiedRpApi.Proce
       .map((element) => ({
         name: element.sender!,
         content: bbcodeToHtml(element.longerText),
-        date: formatDate(element.date!),
+        date: element.date!,
       }));
 }
   

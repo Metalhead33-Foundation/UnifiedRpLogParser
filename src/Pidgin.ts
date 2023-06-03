@@ -8,17 +8,12 @@ interface Replacement {
     replacement: string;
 }
 
-// Function to perform HTML tag replacements
 function performTagReplacements(htmlFile: string): string {
     const replacements: Replacement[] = [
         { pattern: /<p>/g, replacement: '' },
         { pattern: /<\/p>/g, replacement: '' },
-        { pattern: /<span style="color: #16569E"><span style="font-size: smaller">\x28/g, replacement: '<post><time>' },
-        { pattern: /<span style="color: #A82F2F"><span style="font-size: smaller">\x28/g, replacement: '<post><time>' },
-        { pattern: /<span style="color: #062585"><span style="font-size: smaller">\x28/g, replacement: '<post><time>' },
-        { pattern: /<font color="#16569E"><font size="2">\x28/g, replacement: '<post><time>' },
-        { pattern: /<font color="#A82F2F"><font size="2">\x28/g, replacement: '<post><time>' },
-        { pattern: /<font color="#062585"><font size="2">\x28/g, replacement: '<post><time>' },
+        { pattern: /<span style="color: #[A-F0-9]{6}"><span style="font-size: smaller">\x28/g, replacement: '<post><time>' },
+        { pattern: /<font color="#[A-F0-9]{6}"><font size="2">\x28/g, replacement: '<post><time>' },
         { pattern: /\x29<\/font> <b>\*\*\*/g, replacement: '</time><charname>' },
         { pattern: /\x29<\/span> <b>\*\*\*/g, replacement: '</time><charname>' },
         { pattern: /\x29<\/font> <b>/g, replacement: '</time><charname>' },
@@ -36,6 +31,61 @@ function performTagReplacements(htmlFile: string): string {
 
     return htmlFile;
 }
+function extractDateFromHeader(header: string): Date | undefined {
+    const monthNames: { [key: string]: number } = {
+      'jan': 0, 'feb': 1, 'már': 2, 'ápr': 3, 'máj': 4, 'jún': 5, 'júl': 6, 'aug': 7, 'szept': 8, 'okt': 9, 'nov': 10, 'dec': 11
+    };
+    const regex = /([0-9][0-9][0-9][0-9])\. (.+)\. ([0-9]+)\., .+, ([0-9][0-9]):([0-9][0-9]):([0-9][0-9])/;
+    const parts = header.match(regex);
+    console.log(parts);
+    if (parts) {
+        parts.forEach(element => {
+            console.log(element);
+        });
+        console.log(parts.length);
+        if(parts.length >= 7) {
+            const year = parseInt(parts[1], 10);
+            const month = monthNames[parts[2].toLowerCase()];
+            const day = parseInt(parts[3], 10);
+            const hours = parseInt(parts[4], 10);
+            const minutes = parseInt(parts[5], 10);
+            const seconds = parseInt(parts[6], 10);
+            if (!isNaN(year) && month !== undefined && !isNaN(day) && !isNaN(hours) && !isNaN(minutes) && !isNaN(seconds)) {
+                return new Date(year, month, day, hours, minutes, seconds);
+            }
+        }
+    }
+  
+    return undefined; // Date extraction failed
+  }
+  
+  
+  
+function extractDateFromPost(dateString: string, existingDate?: Date): Date | undefined {
+    // Handle date format "2023-01-11 00:52:12" or other unrecognized formats
+    const parsedDate = Date.parse(dateString);
+    if (!isNaN(parsedDate)) {
+      return new Date(parsedDate);
+    }
+
+    if (dateString.includes(':')) {
+      const timeParts = dateString.split(':');
+      if (timeParts.length === 3) {
+        // Handle time format "06:36:27"
+        const [hours, minutes, seconds] = timeParts.map(part => parseInt(part, 10));
+        if (existingDate) {
+          const newDate = new Date(existingDate.getTime());
+          newDate.setHours(hours, minutes, seconds);
+          return newDate;
+        }
+        return undefined; // No existing date provided, cannot create new date from time only
+      }
+    }
+  
+    return undefined; // Unrecognized format, return undefined
+}
+  
+  
 
 export function extractDataFromXml(xmlString: string): UnifiedRpApi.ProcessedResult[] {
     const $ = cheerio.load(xmlString, { xmlMode: true });
@@ -43,8 +93,7 @@ export function extractDataFromXml(xmlString: string): UnifiedRpApi.ProcessedRes
 
     // Iterate over 'body' elements
     $('body').each((idx, elem) => {
-        const convoInfo = $(elem).find('h1').text().match(/(\d{4}.*) \d{2}:\d{2}:\d{2} CE/) || [];
-        const convoDate = convoInfo[1] || 'unknown';
+        const convoDate = extractDateFromHeader($(elem).find('h1').text());
 
         // Iterate over child nodes
         $(elem)
@@ -57,7 +106,7 @@ export function extractDataFromXml(xmlString: string): UnifiedRpApi.ProcessedRes
                     result.push({
                         name: $(elem).find('charname').text().trim(),
                         content: content,
-                        date: convoDate + ' ' + $(elem).find('time').text().trim()
+                        date: extractDateFromPost($(elem).find('time').text().trim(),convoDate) ?? 'Unknown'
                     });
                 }
             });
