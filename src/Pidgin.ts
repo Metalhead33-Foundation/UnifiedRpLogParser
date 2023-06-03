@@ -37,12 +37,7 @@ function extractDateFromHeader(header: string): Date | undefined {
     };
     const regex = /([0-9][0-9][0-9][0-9])\. (.+)\. ([0-9]+)\., .+, ([0-9][0-9]):([0-9][0-9]):([0-9][0-9])/;
     const parts = header.match(regex);
-    console.log(parts);
     if (parts) {
-        parts.forEach(element => {
-            console.log(element);
-        });
-        console.log(parts.length);
         if(parts.length >= 7) {
             const year = parseInt(parts[1], 10);
             const month = monthNames[parts[2].toLowerCase()];
