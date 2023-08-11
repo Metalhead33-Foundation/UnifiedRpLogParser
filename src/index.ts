@@ -14,8 +14,8 @@ function mainFlistNotes(args: Map<string,string>) : void
     }
     const inputPath = args.get('input')!;
     const outputPath = args.get('output') ?? path.join(path.dirname(inputPath), path.basename(inputPath, path.extname(inputPath)) + '.txt');
-    const rawData = FListNotes.processFromHtmlFile(inputPath);
-    const data = (outputPath.endsWith('.json')) ? JSON.stringify(rawData) : UnifiedRpApi.formatProcessedResult(UnifiedRpApi.postprocessExtractedData(rawData));
+    const rawData = UnifiedRpApi.postprocessExtractedData(FListNotes.processFromHtmlFile(inputPath));
+    const data = (outputPath.endsWith('.json')) ? JSON.stringify(rawData) : UnifiedRpApi.formatProcessedResult(rawData);
     fs.writeFileSync(outputPath,data);
     return;
 }
@@ -28,8 +28,8 @@ function mainPidgin(args: Map<string,string>) : void
     }
     const inputPath = args.get('input')!;
     const outputPath = args.get('output') ?? path.join(path.dirname(inputPath), path.basename(inputPath, path.extname(inputPath)) + '.txt');
-    const rawData = Pidgin.extractDataFromHtmlFile(inputPath);
-    const data = (outputPath.endsWith('.json')) ? JSON.stringify(rawData) : UnifiedRpApi.formatProcessedResult(UnifiedRpApi.postprocessExtractedData(rawData));
+    const rawData = UnifiedRpApi.postprocessExtractedData(Pidgin.extractDataFromHtmlFile(inputPath));
+    const data = (outputPath.endsWith('.json')) ? JSON.stringify(rawData) : UnifiedRpApi.formatProcessedResult(rawData);
     fs.writeFileSync(outputPath,data);
     return;
 }
