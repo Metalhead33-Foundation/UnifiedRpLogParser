@@ -33,9 +33,9 @@ function performTagReplacements(htmlFile: string): string {
 }
 function extractDateFromHeader(header: string): Date | undefined {
     const monthNames: { [key: string]: number } = {
-      'jan': 0, 'feb': 1, 'már': 2, 'ápr': 3, 'máj': 4, 'jún': 5, 'júl': 6, 'aug': 7, 'szept': 8, 'okt': 9, 'nov': 10, 'dec': 11
+      'jan': 0, 'febr': 1, 'márc': 2, 'ápr': 3, 'máj': 4, 'jún': 5, 'júl': 6, 'aug': 7, 'szept': 8, 'okt': 9, 'nov': 10, 'dec': 11
     };
-    const regex = /([0-9][0-9][0-9][0-9])\. (.+)\. ([0-9]+)\., .+, ([0-9][0-9]):([0-9][0-9]):([0-9][0-9])/;
+    const regex = /([0-9][0-9][0-9][0-9])\. ([^\.,]+?)\. ([0-9]+)\., .+, ([0-9][0-9]):([0-9][0-9]):([0-9][0-9])/;
     const parts = header.match(regex);
     if (parts) {
         if(parts.length >= 7) {
@@ -50,7 +50,7 @@ function extractDateFromHeader(header: string): Date | undefined {
             }
         }
     }
-  
+    console.log("Failed to extract date from the string '" + header + "'.");
     return undefined; // Date extraction failed
   }
   
@@ -77,6 +77,7 @@ function extractDateFromPost(dateString: string, existingDate?: Date): Date | un
       }
     }
   
+    console.log("Failed to extract time!");
     return undefined; // Unrecognized format, return undefined
 }
   
@@ -88,7 +89,16 @@ export function extractDataFromXml(xmlString: string): UnifiedRpApi.ProcessedRes
 
     // Iterate over 'body' elements
     $('body').each((idx, elem) => {
-        const convoDate = extractDateFromHeader($(elem).find('h1').text());
+        const headerText = $(elem).find('h1').text();
+        const match = headerText.match(/at (.*?)CE/);
+        let convoDate : Date | undefined;
+        if (match && match.length >= 2) {
+            const extractedText = match[1].trim();
+            convoDate = extractDateFromHeader(extractedText);
+        } else {
+            console.log("No /at(.*?)CE/ patteren found!")
+            convoDate = extractDateFromHeader(headerText);
+        }
 
         // Iterate over child nodes
         $(elem)
