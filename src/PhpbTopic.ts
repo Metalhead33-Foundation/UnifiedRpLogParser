@@ -10,6 +10,7 @@ export default function extractPostsFromTopic($: cheerio.Root) : UnifiedRpApi.Pr
         contentString = contentString != null ? contentString.trim() : '';
         result.push({
             name: $(elem).find("span.name").text().trim(),
+            streamlinedDate: false,
             content: contentString,
             date: $(elem).find("table > tbody > tr > td > span.postdetails").contents().filter( function(this : Node) { return this.nodeType === 3 }).last().text().trim(),
         });

@@ -2,6 +2,8 @@ export interface ProcessedResult {
     name: string;
     content: string;
     date: string|Date;
+    streamlinedDate: boolean;
+    unixTimestamp?: number;
 }
 
 // Function to postprocess the extracted data
@@ -19,7 +21,12 @@ export function postprocessExtractedData(result: ProcessedResult[]): ProcessedRe
             processedResult.push(result[i]);
         }
     }
-
+    processedResult.forEach((x : ProcessedResult) => {
+        if (x.date instanceof Date) {
+            x.unixTimestamp = Math.floor(x.date.getTime() / 1000);
+            x.streamlinedDate = true;
+        }
+    });
     return processedResult;
 }
 
@@ -38,13 +45,13 @@ export function formatProcessedResult(result: ProcessedResult[]): string {
     return result
       .map(({ name, content, date }) => {
         if (typeof date === 'string') {
-          return `{{RPG Post/${name}
+return `{{RPG Post/${name}
 |date=${date}
 |post=${content.replace(/\*/g, '{{Str}}')}
 }}`;
         } else if (date instanceof Date) {
           const formattedDate = formatDate(date);
-          return `{{RPG Post/${name}
+return `{{RPG Post/${name}
 |date=${formattedDate}
 |post=${content.replace(/\*/g, '{{Str}}')}
 }}`;

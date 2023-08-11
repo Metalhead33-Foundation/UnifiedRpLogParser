@@ -14,8 +14,9 @@ function mainFlistNotes(args: Map<string,string>) : void
     }
     const inputPath = args.get('input')!;
     const outputPath = args.get('output') ?? path.join(path.dirname(inputPath), path.basename(inputPath, path.extname(inputPath)) + '.txt');
-    const data = UnifiedRpApi.postprocessExtractedData(FListNotes.processFromHtmlFile(inputPath));
-    fs.writeFileSync(outputPath,UnifiedRpApi.formatProcessedResult(data));
+    const rawData = FListNotes.processFromHtmlFile(inputPath);
+    const data = (outputPath.endsWith('.json')) ? JSON.stringify(rawData) : UnifiedRpApi.formatProcessedResult(UnifiedRpApi.postprocessExtractedData(rawData));
+    fs.writeFileSync(outputPath,data);
     return;
 }
 function mainPidgin(args: Map<string,string>) : void
@@ -27,8 +28,9 @@ function mainPidgin(args: Map<string,string>) : void
     }
     const inputPath = args.get('input')!;
     const outputPath = args.get('output') ?? path.join(path.dirname(inputPath), path.basename(inputPath, path.extname(inputPath)) + '.txt');
-    const data = UnifiedRpApi.postprocessExtractedData(Pidgin.extractDataFromHtmlFile(inputPath));
-    fs.writeFileSync(outputPath,UnifiedRpApi.formatProcessedResult(data));
+    const rawData = Pidgin.extractDataFromHtmlFile(inputPath);
+    const data = (outputPath.endsWith('.json')) ? JSON.stringify(rawData) : UnifiedRpApi.formatProcessedResult(UnifiedRpApi.postprocessExtractedData(rawData));
+    fs.writeFileSync(outputPath,data);
     return;
 }
 function mainPhpb(args: Map<string,string>) : void

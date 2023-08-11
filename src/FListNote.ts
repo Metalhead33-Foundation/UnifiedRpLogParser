@@ -103,6 +103,7 @@ export function StandardizePostLogs(input: FListNoteArchive): UnifiedRpApi.Proce
         name: element.sender!,
         content: bbcodeToHtml(element.longerText),
         date: element.date!,
+        streamlinedDate: false
       }));
 }
   

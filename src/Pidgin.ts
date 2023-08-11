@@ -101,7 +101,8 @@ export function extractDataFromXml(xmlString: string): UnifiedRpApi.ProcessedRes
                     result.push({
                         name: $(elem).find('charname').text().trim(),
                         content: content,
-                        date: extractDateFromPost($(elem).find('time').text().trim(),convoDate) ?? 'Unknown'
+                        date: extractDateFromPost($(elem).find('time').text().trim(),convoDate) ?? 'Unknown',
+                        streamlinedDate: false
                     });
                 }
             });
