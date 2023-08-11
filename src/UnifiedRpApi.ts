@@ -1,5 +1,5 @@
 export interface ProcessedResult {
-    name: string;
+    user: string;
     content: string;
     date: string|Date;
     streamlinedDate: boolean;
@@ -15,7 +15,7 @@ export function postprocessExtractedData(result: ProcessedResult[]): ProcessedRe
         const processedIndex = processedResult.length - 1;
         if (i === 0) {
             processedResult.push(result[i]);
-        } else if (processedResult[processedIndex].name === result[i].name) {
+        } else if (processedResult[processedIndex].user === result[i].user) {
             processedResult[processedIndex].content += '<br>\n' + result[i].content;
         } else {
             processedResult.push(result[i]);
@@ -43,15 +43,15 @@ export function formatDate(date: Date): string {
 
 export function formatProcessedResult(result: ProcessedResult[]): string {
     return result
-      .map(({ name, content, date }) => {
+      .map(({ user, content, date }) => {
         if (typeof date === 'string') {
-return `{{RPG Post/${name}
+return `{{RPG Post/${user}
 |date=${date}
 |post=${content.replace(/\*/g, '{{Str}}')}
 }}`;
         } else if (date instanceof Date) {
           const formattedDate = formatDate(date);
-return `{{RPG Post/${name}
+return `{{RPG Post/${user}
 |date=${formattedDate}
 |post=${content.replace(/\*/g, '{{Str}}')}
 }}`;

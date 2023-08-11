@@ -100,7 +100,7 @@ export function StandardizePostLogs(input: FListNoteArchive): UnifiedRpApi.Proce
     return input.posts
       .filter((element) => element.date != null && element.sender != null)
       .map((element) => ({
-        name: element.sender!,
+        user: element.sender!,
         content: bbcodeToHtml(element.longerText),
         date: element.date!,
         streamlinedDate: false

@@ -109,7 +109,7 @@ export function extractDataFromXml(xmlString: string): UnifiedRpApi.ProcessedRes
                     let content = postContentElem.length > 0 ? postContentElem.html() : '';
                     content = content != null ? content.replace(/\n/g, '<br>').trim() : '';
                     result.push({
-                        name: $(elem).find('charname').text().trim(),
+                        user: $(elem).find('charname').text().trim(),
                         content: content,
                         date: extractDateFromPost($(elem).find('time').text().trim(),convoDate) ?? 'Unknown',
                         streamlinedDate: false
