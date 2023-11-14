@@ -81,7 +81,14 @@ function extractDateFromPost(dateString: string, existingDate?: Date): Date | un
     return undefined; // Unrecognized format, return undefined
 }
   
-  
+function prependCharNameIfNeeded(charName: string, content: string): string {
+    // Check if content starts with a non-capital letter
+    if (/^[^A-Z]/.test(content)) {
+        // Prepend character's name and a space
+        return `${charName} ${content}`;
+    }
+    return content;
+}
 
 export function extractDataFromXml(xmlString: string): UnifiedRpApi.ProcessedResult[] {
     const $ = cheerio.load(xmlString, { xmlMode: true });
@@ -106,12 +113,15 @@ export function extractDataFromXml(xmlString: string): UnifiedRpApi.ProcessedRes
             .each((idx: number, elem: cheerio.Element) => {
                 if (elem != null && elem.type === 'tag' && elem.name === 'post') {
                     const postContentElem = $(elem).find('postcontent');
+                    const charname = $(elem).find('charname').text().trim();
+                    const date = extractDateFromPost($(elem).find('time').text().trim(),convoDate) ?? 'Unknown';
                     let content = postContentElem.length > 0 ? postContentElem.html() : '';
                     content = content != null ? content.replace(/\n/g, '<br>').trim() : '';
+                    content = prependCharNameIfNeeded(charname,content);
                     result.push({
-                        user: $(elem).find('charname').text().trim(),
+                        user: charname,
                         content: content,
-                        date: extractDateFromPost($(elem).find('time').text().trim(),convoDate) ?? 'Unknown',
+                        date: date,
                         streamlinedDate: false
                     });
                 }
